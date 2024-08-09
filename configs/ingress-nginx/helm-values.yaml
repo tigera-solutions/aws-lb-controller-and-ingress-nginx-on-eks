@@ -1,0 +1,53 @@
+# see all values at https://github.com/kubernetes/ingress-nginx/blob/main/charts/ingress-nginx/values.yaml
+controller:
+  dnsPolicy: ClusterFirstWithHostNet # ClusterFirst | ClusterFirstWithHostNet
+  hostNetwork: true # true | false
+  ## Use host ports 80 and 443
+  ## Disabled by default
+  hostPort:
+    # -- Enable 'hostPort' or not
+    enabled: false
+    ports:
+      # -- 'hostPort' http port
+      http: 80
+      # -- 'hostPort' https port
+      https: 443
+  kind: Deployment # Deployment | DaemonSet
+  service:
+    # -- Enable controller services or not. This does not influence the creation of either the admission webhook or the metrics service.
+    enabled: true
+    external:
+      # -- Enable the external controller service or not. Useful for internal-only deployments.
+      enabled: true
+    # -- Type of the external controller service.
+    # Ref: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
+    type: NodePort # LoadBalancer | NodePort
+    # -- Enable the HTTP listener on both controller services or not.
+    enableHttp: true
+    # -- Enable the HTTPS listener on both controller services or not.
+    enableHttps: true
+    ports:
+      # -- Port the external HTTP listener is published with.
+      http: 80
+      # -- Port the external HTTPS listener is published with.
+      https: 443
+    targetPorts:
+      # -- Port of the ingress controller the external HTTP listener is mapped to.
+      http: http
+      # -- Port of the ingress controller the external HTTPS listener is mapped to.
+      https: https
+    nodePorts:
+      # -- Node port allocated for the external HTTP listener. If left empty, the service controller allocates one from the configured node port range.
+      http: "30358" # set this value to the port number of the NodePort of ingress-nginx-controller service
+      # -- Node port allocated for the external HTTPS listener. If left empty, the service controller allocates one from the configured node port range.
+      https: ""
+      # -- Node port mapping for external TCP listeners. If left empty, the service controller allocates them from the configured node port range.
+      # Example:
+      # tcp:
+      #   8080: 30080
+      tcp: {}
+      # -- Node port mapping for external UDP listeners. If left empty, the service controller allocates them from the configured node port range.
+      # Example:
+      # udp:
+      #   53: 30053
+      udp: {}

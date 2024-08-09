@@ -1,0 +1,40 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: alb-demo-ingress-nginx
+  namespace: default
+  annotations:
+    # Ingress Core Settings
+    kubernetes.io/ingress.class: "alb"
+    kubernetes.io/ingress.allow-http: "true"
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: instance
+    # Health Check Settings
+    alb.ingress.kubernetes.io/healthcheck-protocol: HTTP
+    alb.ingress.kubernetes.io/healthcheck-port: "30358" # Make sure you add the NodePort of the ingress-nginx-controller NodePort service
+    alb.ingress.kubernetes.io/healthcheck-path: "/healthz" # Put the path of readiness probe over here
+    alb.ingress.kubernetes.io/healthcheck-interval-seconds: "15"
+    alb.ingress.kubernetes.io/healthcheck-timeout-seconds: "5"
+    alb.ingress.kubernetes.io/success-codes: "200"
+    alb.ingress.kubernetes.io/healthy-threshold-count: "2"
+    alb.ingress.kubernetes.io/unhealthy-threshold-count: "2"
+    # ## SSL Settings
+    # alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}, {"HTTP":80}]'
+    # alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:eu-west-2:122221113322:certificate/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx # make sure you update your certificate arn over here
+    # #alb.ingress.kubernetes.io/ssl-policy: ELBSecurityPolicy-TLS-1-1-2017-01 #Optional (Picks default if not used)
+    # # redirect all HTTP to HTTPS
+    # alb.ingress.kubernetes.io/actions.ssl-redirect: '{"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS", "Port": "443", "StatusCode": "HTTP_301"}}'
+spec:
+  ingressClassName: alb
+  rules:
+    - host: www.demo.io
+      http:
+        paths:
+          - pathType: Prefix
+            backend:
+              service:
+                # use NodePort service when ingress-nginx is configured in host networked mode
+                name: demo-np
+                port:
+                  number: 80
+            path: /

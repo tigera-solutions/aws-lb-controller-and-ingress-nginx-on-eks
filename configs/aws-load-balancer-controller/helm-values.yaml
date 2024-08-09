@@ -1,0 +1,32 @@
+# see all values at https://github.com/aws/eks-charts/blob/master/stable/aws-load-balancer-controller/values.yaml
+vpcId: vpc-0fb51d4269bf8d264 # change to your VPC_ID
+defaultTargetType: instance
+# Specifies if aws-load-balancer-controller should be started in hostNetwork mode.
+# This is required if using a custom CNI where the managed control plane nodes are unable to initiate
+# network connections to the pods, for example using Calico CNI plugin on EKS. This is not required or
+# recommended if using the Amazon VPC CNI plugin.
+hostNetwork: true
+
+# Specifies the dnsPolicy that should be used for pods in the deployment
+# #
+# # This may need to be used to be changed given certain conditions. For instance, if one uses the cilium CNI
+# # with certain settings, one may need to set `hostNetwork: true` and webhooks won't work unless `dnsPolicy`
+# # is set to `ClusterFirstWithHostNet`. See https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy
+dnsPolicy: ClusterFirstWithHostNet
+
+# ingressClassConfig contains configurations specific to the ingress class
+# ingressClassConfig:
+#   default: false
+
+# enableServiceMutatorWebhook allows you enable the webhook which makes this controller the default for all new services of type LoadBalancer
+enableServiceMutatorWebhook: true
+
+# Specifies the class of load balancer to use for services. This affects how services are provisioned if type LoadBalancer is used (default service.k8s.aws/nlb)
+# loadBalancerClass:
+
+# The TCP port the Webhook server binds to. (default 9443)
+#webhookBindPort:
+
+# The address the metric endpoint binds to. (default ":8080")
+# if you already have another host networked port running on 8080 port, use a different port for metrics server
+metricsBindAddr: ":18080"
